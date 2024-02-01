@@ -21,6 +21,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={reg:HKLM\SOFTWARE\Mount&Blade Warband\,Install_Path|{commonpf}\Mount&Blade Warband}\
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
+DirExistsWarning=no
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
 OutputBaseFilename=WSE2_Installer.exe
@@ -36,15 +37,19 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [CustomMessages]
 shortcut=Add to your steam library%n  This will modify:%n  "%1"%n  (Backup is created in the same folder with .bak ending)
+profiles=Copy profiles
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 Name: "steam_shortcut"; Description: "{cm:shortcut,{code:find_shortcuts_path}}";  Check: has_shortcuts
+Name: "copy_profiles"; Description: "{cm:profiles}"; Check: can_copy_profiles
 
 [Files]
 Source: ".\files\WSE\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs
 Source: ".\files\vdf-shortcut-editor.exe"; DestDir: "{app}"; Flags: dontcopy
-; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+
+Source: "{userappdata}\Mount&Blade Warband\profiles.dat"; DestDir: "{userappdata}\Mount&Blade Warband WSE2\"; Check: can_copy_profiles() and WizardIsTaskSelected('copy_profiles'); Flags: onlyifdoesntexist external
+
 
 [Icons]
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
@@ -127,6 +132,11 @@ begin
   begin
     MsgBox('NextButtonClick:' #13#13 'The file could not be executed. ' + SysErrorMessage(ResultCode) + '.', mbError, MB_OK);
   end;
+end;
+
+function can_copy_profiles(): boolean;
+begin
+  result := FileExists(ExpandConstant('{userappdata}\Mount&Blade Warband\profiles.dat')) and not FileExists(ExpandConstant('{userappdata}\Mount&Blade Warband WSE2\profiles.dat'))
 end;
 
 procedure OnDirChanged(Sender: TObject);
