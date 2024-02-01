@@ -2,10 +2,10 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Warband Script Enhancer 2"
-#define MyAppVersion "2"
+#define MyAppVersion "1"
 #define MyAppPublisher "K700, AgentSmith"
 #define MyAppURL "https://forums.taleworlds.com/index.php?threads/warband-script-enhancer-2-v1-1-1-5.384882/"
-#define MyAppExeName "MyProg.exe"
+#define MyAppExeName "wse2_launcher.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -13,33 +13,127 @@
 AppId={{C92628E7-333E-4CDA-B4B9-AB3EB028E15E}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-;AppVerName={#MyAppName} {#MyAppVersion}
+AppVerName={#MyAppName}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName={reg:HKLM\SOFTWARE\Mount&Blade Warband\,Install_Path|{pf}\Mount&Blade Warband}\
+DefaultDirName={reg:HKLM\SOFTWARE\Mount&Blade Warband\,Install_Path|{commonpf}\Mount&Blade Warband}\
 DefaultGroupName={#MyAppName}
+DisableProgramGroupPage=yes
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
 OutputBaseFilename=WSE2_Installer.exe
 Compression=lzma
 SetupIconFile=Images\iconwb.ico
 SolidCompression=yes
-WizardStyle=modern
+WizardStyle=classic
+WizardSmallImageFile=Images\mb_inst_top.bmp
+WizardImageFile=Images\mb_inst_left.bmp
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
+[CustomMessages]
+shortcut=Add to your steam library%n  This will modify:%n  "%1"%n  (Backup is created in the same folder with .bak ending)
+
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-Name: "steam_shortcut"; Description: "Add to your steam library";
+Name: "steam_shortcut"; Description: "{cm:shortcut,{code:find_shortcuts_path}}";  Check: has_shortcuts
 
 [Files]
-Source: ".\files\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs
+Source: ".\files\WSE\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs
+Source: ".\files\vdf-shortcut-editor.exe"; DestDir: "{app}"; Flags: dontcopy
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
+[Code]
+function find_shortcuts_path(Param: string): string;
+var
+  success: boolean;
+  active_usr : Cardinal;
+  shortcut_path, usr_dir, found_dir: string;
+  info : TFindRec;
+begin
+  result := '';
+  
+  success := RegQueryStringValue(HKEY_CURRENT_USER, 'Software\Valve\Steam', 'SteamPath', usr_dir);
+  if not success then begin Exit; end;
+  usr_dir := usr_dir + '/userdata/';
+  if not DirExists(usr_dir) then begin Exit; end;
+  
+  //First see if a user is logged into steam and use that id
+  success := RegQueryDWordValue(HKEY_CURRENT_USER, 'Software\Valve\Steam\ActiveProcess', 'ActiveUser', active_usr);
+  if success and (active_usr <> 0) then begin
+    shortcut_path := usr_dir + IntToStr(active_usr) + '/config/shortcuts.vdf';
+    
+    if FileExists(shortcut_path) then begin
+      result := shortcut_path;
+      Exit;  
+    end; 
+  end;
+  
+  //Next we look if there is a single user folder (not counting "0")
+  If FindFirst(usr_dir + '*', info) then
+  begin
+    found_dir := '';
+    try
+      Repeat
+        Log(info.Name);
+        if info.Attributes and FILE_ATTRIBUTE_DIRECTORY <> 0 then begin
+          if (info.Name <> '0') and (info.Name <> '.') and (info.Name <> '..') then begin
+            if found_dir <> '' then begin //if we already found a folder, it means there are multiple accounts. Abort
+              result := '';
+              Exit;
+            end;
+            found_dir := info.Name;
+          end;
+        end;
+      Until not FindNext(info);
+    finally
+      FindClose(info);
+    end;
+  end;
+  
+  if found_dir <> '' then begin
+    shortcut_path := usr_dir + found_dir + '/config/shortcuts.vdf';
+    if FileExists(shortcut_path) then begin
+      result := shortcut_path;
+      Exit;  
+    end;  
+  end;   
+end;
+
+function has_shortcuts(): boolean;
+begin
+  result := (find_shortcuts_path('') <> '');
+end;
+
+procedure call_shortcut_editor(in_file: String);
+var
+  resultCode: Integer;
+  params: string;
+begin
+  params := in_file + ' -a -1287593386 "Mount & Blade: Warband WSE2" "' + ExpandConstant('{app}\{#MyAppExeName}') + '"';
+  params := '';
+
+  ExtractTemporaryFile('vdf-shortcut-editor.exe');
+  if not Exec(ExpandConstant('{tmp}\vdf-shortcut-editor.exe'), params, '', SW_SHOWNORMAL, ewWaitUntilTerminated, ResultCode) then
+  begin
+    MsgBox('NextButtonClick:' #13#13 'The file could not be executed. ' + SysErrorMessage(ResultCode) + '.', mbError, MB_OK);
+  end;
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+var
+  p: string;
+begin
+  if CurStep = ssPostInstall then begin
+    p := find_shortcuts_path('');
+    if (p<>'') and WizardIsTaskSelected('steam_shortcut') then begin
+      call_shortcut_editor(p);  
+    end;
+  end;  
+end;
