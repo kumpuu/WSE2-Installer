@@ -36,7 +36,7 @@ WizardImageFile=Images\mb_inst_left.bmp
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [CustomMessages]
-shortcut=Add to your steam library%n  This will modify:%n  "%1"%n  (Backup is created in the same folder with .bak ending)
+shortcut=Add to your steam library
 profiles=Copy profiles
 
 [Tasks]
@@ -165,9 +165,23 @@ begin
 end;
 
 procedure CurPageChanged(CurPageID: Integer);
+var
+  p: string;
 begin
-  if CurPageID = wpSelectDir then
+  if CurPageID = wpSelectDir then begin
     OnDirChanged(nil);
+  end
+  else if (CurPageID = wpReady) and WizardIsTaskSelected('steam_shortcut') then begin
+    p := find_shortcuts_path('');
+    with Wizardform.ReadyMemo.Lines do begin
+      Add('');
+      Add('**Notice**');
+      Add('    In order to add WSE2 to your steam library, setup has to modify');
+      Add('    "' + p + '"');
+      Add('    A backup is created in the same folder with .bak ending');
+      Add('    If something goes wrong, you can restore from this file.');  
+    end;
+  end
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
