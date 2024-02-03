@@ -2,7 +2,9 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Warband Script Enhancer 2"
-#define MyAppVersion "1.1.1.5"
+#ifndef MyAppVersion
+  #define MyAppVersion "1.1.1.6"
+#endif
 #define MyAppPublisher "K700, cmpxchg8b, AgentSmith"
 #define MyAppURL "https://forums.taleworlds.com/index.php?threads/warband-script-enhancer-2-v1-1-1-5.384882/"
 #define MyAppExeName "wse2_launcher.exe"

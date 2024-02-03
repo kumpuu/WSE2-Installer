@@ -1,1 +1,1 @@
-start Inno/Compil32.exe /cc setup.iss
+start Inno\iscc.exe setup.iss /DMyAppVersion=1.1.1.6
