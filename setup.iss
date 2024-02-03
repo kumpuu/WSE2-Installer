@@ -25,7 +25,7 @@ DefaultDirName={reg:HKLM\SOFTWARE\Mount&Blade Warband,Install_Path|{commonpf}\Mo
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 DirExistsWarning=no
-OutputBaseFilename=WSE2_Installer.exe
+OutputBaseFilename=WSE2_Installer
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
 SetupIconFile=Images\iconwb.ico
