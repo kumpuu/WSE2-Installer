@@ -2,8 +2,8 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Warband Script Enhancer 2"
-#define MyAppVersion "1"
-#define MyAppPublisher "K700, AgentSmith"
+#define MyAppVersion "1.1.1.5"
+#define MyAppPublisher "K700, cmpxchg8b, AgentSmith"
 #define MyAppURL "https://forums.taleworlds.com/index.php?threads/warband-script-enhancer-2-v1-1-1-5.384882/"
 #define MyAppExeName "wse2_launcher.exe"
 
@@ -13,21 +13,23 @@
 AppId={{C92628E7-333E-4CDA-B4B9-AB3EB028E15E}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-AppVerName={#MyAppName}
+AppVerName={#MyAppName} (v{#MyAppVersion})
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName={reg:HKLM\SOFTWARE\Mount&Blade Warband\,Install_Path|{commonpf}\Mount&Blade Warband}\
+AppendDefaultDirName=no
+DefaultDirName={reg:HKLM\SOFTWARE\Mount&Blade Warband,Install_Path|{commonpf}\Mount&Blade Warband}\
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 DirExistsWarning=no
+OutputBaseFilename=WSE2_Installer.exe
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
-OutputBaseFilename=WSE2_Installer.exe
-Compression=lzma
 SetupIconFile=Images\iconwb.ico
+Compression=lzma
 SolidCompression=yes
+Uninstallable=no
 WizardStyle=classic
 WizardSmallImageFile=Images\mb_inst_top.bmp
 WizardImageFile=Images\mb_inst_left.bmp
@@ -35,24 +37,22 @@ WizardImageFile=Images\mb_inst_left.bmp
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
-[CustomMessages]
-shortcut=Add to your steam library
-profiles=Copy profiles
-
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-Name: "steam_shortcut"; Description: "{cm:shortcut,{code:find_shortcuts_path}}";  Check: has_shortcuts
-Name: "copy_profiles"; Description: "{cm:profiles}"; Check: can_copy_profiles
+Name: "steam_shortcut"; Description: "Add to your steam library";  Check: has_shortcuts
+Name: "copy_profiles"; Description: "Copy profiles"; Check: can_copy_profiles
 
 [Files]
 Source: ".\files\WSE\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs
-Source: ".\files\vdf-shortcut-editor.exe"; DestDir: "{app}"; Flags: dontcopy
+Source: ".\files\vdf-shortcut-editor.exe"; DestDir: "{app}"; Flags: deleteafterinstall
 
 Source: "{userappdata}\Mount&Blade Warband\profiles.dat"; DestDir: "{userappdata}\Mount&Blade Warband WSE2\"; Check: can_copy_profiles() and WizardIsTaskSelected('copy_profiles'); Flags: onlyifdoesntexist external
 
-
 [Icons]
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+
+[Run]
+Filename: "{app}\vdf-shortcut-editor.exe"; Parameters: """{code:find_shortcuts_path}"" -a -1287593386 ""Mount & Blade: Warband WSE2"" ""{app}\{#MyAppExeName}"""; StatusMsg: "Adding to steam..."; Flags: runhidden; Check: WizardIsTaskSelected('steam_shortcut');
 
 [Code]
 var
@@ -89,7 +89,6 @@ begin
     found_dir := '';
     try
       Repeat
-        Log(info.Name);
         if info.Attributes and FILE_ATTRIBUTE_DIRECTORY <> 0 then begin
           if (info.Name <> '0') and (info.Name <> '.') and (info.Name <> '..') then begin
             if found_dir <> '' then begin //if we already found a folder, it means there are multiple accounts. Abort
@@ -117,21 +116,6 @@ end;
 function has_shortcuts(): boolean;
 begin
   result := (find_shortcuts_path('') <> '');
-end;
-
-procedure call_shortcut_editor(in_file: String);
-var
-  resultCode: Integer;
-  params: string;
-begin
-  params := in_file + ' -a -1287593386 "Mount & Blade: Warband WSE2" "' + ExpandConstant('{app}\{#MyAppExeName}') + '"';
-  params := '';
-
-  ExtractTemporaryFile('vdf-shortcut-editor.exe');
-  if not Exec(ExpandConstant('{tmp}\vdf-shortcut-editor.exe'), params, '', SW_SHOWNORMAL, ewWaitUntilTerminated, ResultCode) then
-  begin
-    MsgBox('NextButtonClick:' #13#13 'The file could not be executed. ' + SysErrorMessage(ResultCode) + '.', mbError, MB_OK);
-  end;
 end;
 
 function can_copy_profiles(): boolean;
@@ -176,22 +160,10 @@ begin
     with Wizardform.ReadyMemo.Lines do begin
       Add('');
       Add('**Notice**');
-      Add('    In order to add WSE2 to your steam library, setup has to modify');
+      Add('    In order to add WSE2 to your steam library, setup will modify');
       Add('    "' + p + '"');
       Add('    A backup is created in the same folder with .bak ending');
       Add('    If something goes wrong, you can restore from this file.');  
     end;
   end
-end;
-
-procedure CurStepChanged(CurStep: TSetupStep);
-var
-  p: string;
-begin
-  if CurStep = ssPostInstall then begin
-    p := find_shortcuts_path('');
-    if (p <> '') and WizardIsTaskSelected('steam_shortcut') then begin
-      call_shortcut_editor(p);  
-    end;
-  end;  
 end;
