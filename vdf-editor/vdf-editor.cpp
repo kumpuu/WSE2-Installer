@@ -173,12 +173,16 @@ int wmain(int argc, wchar_t* argv[])
             if (vdf_cmp_nodes(child, &entry, ignores))
             { 
                 std::cout << "Shortcut already exists.";
+                fs::remove(bakbak_path);
                 return 0;
             }
         }
 
         fs::path bak_path = in_path;
         bak_path.concat(".bak");
+
+        while (fs::exists(bak_path)){ bak_path.concat("1"); }
+
         fs::rename(bakbak_path, bak_path);
         
         doc.childs[0]->childs.push_back(&entry);
