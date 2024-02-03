@@ -1,0 +1,23 @@
+﻿  vdf-editor.cpp
+E:\Projekte\Warband\WSE2-Installer\vdf-editor\vdf.hpp(56,11): warning C4244: "Initialisierung": Konvertierung von "std::streamoff" in "int", möglicher Datenverlust
+  (Quelldatei „vdf-editor.cpp“ wird kompiliert)
+  
+E:\Projekte\Warband\WSE2-Installer\vdf-editor\vdf.hpp(72,29): warning C4244: "=": Konvertierung von "std::streamoff" in "int", möglicher Datenverlust
+  (Quelldatei „vdf-editor.cpp“ wird kompiliert)
+  
+E:\Projekte\Warband\WSE2-Installer\vdf-editor\vdf.hpp(75,19): warning C4244: "Initialisierung": Konvertierung von "std::streamoff" in "int", möglicher Datenverlust
+  (Quelldatei „vdf-editor.cpp“ wird kompiliert)
+  
+E:\Projekte\Warband\WSE2-Installer\vdf-editor\vdf.hpp(114,11): warning C4244: "Initialisierung": Konvertierung von "std::streamoff" in "int", möglicher Datenverlust
+  (Quelldatei „vdf-editor.cpp“ wird kompiliert)
+  
+E:\Projekte\Warband\WSE2-Installer\vdf-editor\vdf.hpp(119,25): warning C4244: "=": Konvertierung von "std::streamoff" in "int", möglicher Datenverlust
+  (Quelldatei „vdf-editor.cpp“ wird kompiliert)
+  
+  Code wird generiert.
+  0 of 706 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Codegenerierung ist abgeschlossen.
+  vdf-editor.vcxproj -> E:\Projekte\Warband\WSE2-Installer\vdf-editor\x64\Release\vdf-editor.exe
+          1 Datei(en) kopiert.
