@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <stdint.h>
+#include <algorithm>
 
 /*Reading, writing, printing binary .vdf files*/
 
@@ -32,6 +33,9 @@ const char* vdf_type_names[9] =
     "Numtypes"
 };
 
+struct vdf_entry;
+typedef std::vector<vdf_entry*> child_list;
+
 struct vdf_entry
 {
     vdf_type ty = vdf_type::TYPE_NODE;
@@ -40,11 +44,11 @@ struct vdf_entry
     char* buf = NULL;
     size_t buf_len = 0;
 
-    std::vector<vdf_entry*> childs;
+    child_list childs;
 };
 
 struct vdf_doc {
-    std::vector<vdf_entry*> childs;
+    child_list childs;
 };
 
 void vdf_read_entry(std::ifstream &stream, vdf_entry &entry)
@@ -64,7 +68,7 @@ void vdf_read_entry(std::ifstream &stream, vdf_entry &entry)
     //std::cout << char(ty + '0') << " " << entry.name << "\n";
 
     if(ty == vdf_type::TYPE_NODE){
-        while(true) {
+        while(!stream.eof()) {
             x = stream.tellg();
             vdf_entry *child = new vdf_entry();
             vdf_read_entry(stream, *child);
@@ -188,4 +192,40 @@ void vdf_print_doc(std::ostream& stream, vdf_doc& doc)
     for (auto child : doc.childs) {
         vdf_print_entry(stream, child, "  ");
     }
+}
+
+bool vdf_cmp_nodes(vdf_entry* node1, vdf_entry* node2, std::vector<std::string>& ignores)
+{
+    if (node1->childs.size() != node2->childs.size()) { return false; }
+
+    child_list::iterator i1 = node1->childs.begin();
+    child_list::iterator i2 = node2->childs.begin();
+
+    while (i1 != node1->childs.end()) 
+    {
+        vdf_entry* e1 = *i1;
+        vdf_entry* e2 = *i2;
+
+        if (e1->ty != e2->ty) { return false; }
+        if (e1->name != e2->name) { return false; }
+
+        if (std::find(ignores.begin(), ignores.end(), e1->name) == ignores.end())
+        {
+            if (e1->ty == vdf_type::TYPE_NODE)
+            {
+                if (!vdf_cmp_nodes(e1, e2, ignores)) { return false; }
+            }
+            else
+            {
+                if (e1->buf_len != e2->buf_len) { return false; }
+                if (e1->buf_len > 0)
+                {
+                    if (memcmp(e1->buf, e2->buf, e1->buf_len) != 0) { return false; }
+                }
+            }
+        }
+        i1++; i2++;
+    }
+
+    return true;
 }
