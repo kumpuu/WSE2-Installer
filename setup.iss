@@ -154,7 +154,7 @@ procedure CurPageChanged(CurPageID: Integer);
 var
   p: string;
 begin
-  if CurPageID = wpSelectDir then begin
+  if CurPageID = wpSelectDir then begin                                                                          
     OnDirChanged(nil);
   end
   else if (CurPageID = wpReady) and WizardIsTaskSelected('steam_shortcut') then begin
@@ -165,7 +165,8 @@ begin
       Add('    In order to add WSE2 to your steam library, setup will modify');
       Add('    "' + p + '"');
       Add('    A backup is created in the same folder with .bak ending');
-      Add('    If something goes wrong, you can restore from this file.');  
+      Add('    If something goes wrong, you can restore from this file.');
+      Add('    You must restart Steam to see the new shortcut.');  
     end;
   end
 end;
