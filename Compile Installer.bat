@@ -1,1 +1,1 @@
-start Inno\iscc.exe setup.iss /DMyAppVersion=1.1.1.6
+start Inno\iscc.exe setup.iss /DMyAppVersion=1.1.3.7

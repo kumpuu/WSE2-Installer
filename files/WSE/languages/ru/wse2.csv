@@ -56,6 +56,7 @@ ui_multiplayer_kills|Сообщения об убийствах
 ui_all_kills|Все
 ui_own|Свои
 ui_player_deaths|Смерти игроков
+ui_own_kills_and_player_deaths|Свои убийства и смерти игроков
 ui_sun_flare|Солнечный диск
 ui_enable_alt_f4|Включить выход с Alt+F4
 ui_invert_mouse_x_axis|Инвертировать ось X мыши
@@ -63,6 +64,7 @@ ui_enable_sound|Включить звук
 ui_enable_music|Включить музыку
 ui_toggle_background|Фон
 ui_font_scale|Масштаб шрифта
+ui_messages_font_scale|Масштаб шрифта сообщений
 ui_spectator_camera_controls|Контроль камеры зрителя
 ui_faster_camera|Движение камеры быстрее
 ui_slower_camera|Движение камеры медленнее
@@ -100,6 +102,8 @@ ui_fxaa_tooltip|Сглаживает неровные края, значител
 ui_anisotropic_filtering_tooltip|Уменьшает размытость на удаленных поверхностях\n\nСтоимость производительности: <c=0xFFAA00>Средняя</c>
 ui_sound_occlusion_tooltip|Имитирует то, как звуки воспринимаются в «закрытой» среде. Закрытой - означает, что рядом с источником звука или слушателем есть барьеры\n\nСтоимость производительности: <c=0xFF0000>Высокая</c>
 ui_update_wse2_version|Пожалуйста, обновите свою версию WSE2, иначе вас кикнет с этого сервера.
+ui_server_for_wse2_campaign|Этот сервер предназначен для сетевой кампании на WSE2, пожалуйста запустите WSE2 и выберите "Присоединиться к кампании".
+ui_server_for_standart_game_modes|Этот сервер предназначен для обычных режимов игры, пожалуйста выберите "Присоединиться к игре".
 ui_enable_cheats_wse2|Включить чит-коды
 ui_enable_edit_mode_wse2|Режим редактирования (может замедлить игру).
 ui_language_wse2|Язык:
@@ -117,6 +121,7 @@ ui_mark_nontranslated_lines|Отметить непереведенные стр
 ui_create_language_template_required_game|Создайте новую игру или восстановите игру, прежде чем использовать эту функцию!
 ui_create_language_template_generated|Файлы языкового шаблона сгенерированы в каталоге new_language!
 ui_create_language_template_generated_marked|Файлы языкового шаблона сгенерированы в каталоге new_language! Непереведенные тексты помечаются знаком {***}. Вы можете использовать это как ключевое слово для поиска.
+ui_join_campaign|Присоединиться к кампании
 ui_custom_key_1|
 ui_custom_key_2|
 ui_custom_key_3|

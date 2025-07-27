@@ -56,6 +56,7 @@ ui_multiplayer_kills|Kill Messages
 ui_all_kills|All
 ui_own|Own
 ui_player_deaths|Player deaths
+ui_own_kills_and_player_deaths|Own kills and player deaths
 ui_sun_flare|Sun Flare
 ui_enable_alt_f4|Enable Quit With Alt+F4
 ui_invert_mouse_x_axis|Invert Mouse X Axis
@@ -63,6 +64,7 @@ ui_enable_sound|Enable Sound
 ui_enable_music|Enable Music
 ui_toggle_background|Background
 ui_font_scale|Font Scale
+ui_messages_font_scale|Messages Font Scale
 ui_spectator_camera_controls|Spectator Camera Controls
 ui_faster_camera|Faster Camera Movement
 ui_slower_camera|Slower Camera Movement
@@ -100,6 +102,8 @@ ui_fxaa_tooltip|Smooths out jagged edges, significantly blurs the screen\n\nPerf
 ui_anisotropic_filtering_tooltip|Reduces blur on distant surfaces\n\nPerformance Cost: <c=0xFFAA00>Medium</c>
 ui_sound_occlusion_tooltip|Imitates how sounds are perceived in "closed" environments, closed meaning that there are barriers close to the sound source or listener\n\nPerformance Cost: <c=0xFF0000>High</c>
 ui_update_wse2_version|Please update your WSE2 version or you will be kicked from this server.
+ui_server_for_wse2_campaign|This server is for an online campaign on WSE2, please launch WSE2 and select "Join a Campaign".
+ui_server_for_standart_game_modes|This server is for standart game modes, please select "Join a Game".
 ui_enable_cheats_wse2|Enable Cheats
 ui_enable_edit_mode_wse2|Enable Edit Mode (Be warned, this slows down the game.)
 ui_language_wse2|Language:
@@ -117,6 +121,7 @@ ui_mark_nontranslated_lines|Mark Non-translated Lines
 ui_create_language_template_required_game|Create a new game or restore a game before using this function!
 ui_create_language_template_generated|Language Template Files Generated Under new_language directory!
 ui_create_language_template_generated_marked|Language Template Files Generated Under new_language directory! Non-translated texts are marked with a {***} sign. You can use this as the search keyword.
+ui_join_campaign|Join a Campaign
 ui_custom_key_1|
 ui_custom_key_2|
 ui_custom_key_3|

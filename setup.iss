@@ -3,7 +3,7 @@
 
 #define MyAppName "Warband Script Enhancer 2"
 #ifndef MyAppVersion
-  #define MyAppVersion "1.1.1.6"
+  #define MyAppVersion "1.1.3.7"
 #endif
 #define MyAppPublisher "K700, cmpxchg8b, AgentSmith"
 #define MyAppURL "https://forums.taleworlds.com/index.php?threads/warband-script-enhancer-2-v1-1-1-5.384882/"
@@ -41,26 +41,27 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-Name: "steam_shortcut"; Description: "Add to your steam library";  Check: has_shortcuts
+Name: "steam_shortcut"; Description: "Add to your steam library";  Check: has_shortcuts_dir
 Name: "copy_profiles"; Description: "Copy profiles"; Check: can_copy_profiles
 
 [Files]
 Source: ".\files\WSE\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs
+;Below is an empty placeholder file in case the steam user doesnt have a shortcuts.vdf yet
+Source: ".\files\shortcuts.vdf"; DestDir: "{code:find_shortcuts_dir}"; Check: WizardIsTaskSelected('steam_shortcut'); Flags: onlyifdoesntexist
 Source: ".\files\vdf-shortcut-editor.exe"; DestDir: "{app}"; Flags: deleteafterinstall
-
 Source: "{userappdata}\Mount&Blade Warband\profiles.dat"; DestDir: "{userappdata}\Mount&Blade Warband WSE2\"; Check: can_copy_profiles() and WizardIsTaskSelected('copy_profiles'); Flags: onlyifdoesntexist external
 
 [Icons]
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\vdf-shortcut-editor.exe"; Parameters: """{code:find_shortcuts_path}"" -a -1287593386 ""Mount & Blade: Warband WSE2"" ""{app}\{#MyAppExeName}"""; StatusMsg: "Adding to steam..."; Flags: runhidden; Check: WizardIsTaskSelected('steam_shortcut');
+Filename: "{app}\vdf-shortcut-editor.exe"; Parameters: """{code:get_shortcuts_file}"" -a -1287593386 ""Mount & Blade: Warband WSE2"" ""{app}\{#MyAppExeName}"""; StatusMsg: "Adding to steam..."; Flags: runhidden; Check: WizardIsTaskSelected('steam_shortcut');
 
 [Code]
 var
-  DirOk_Label: TNewStaticText;
+  DirOk_Label, Finished_Notice_Label: TNewStaticText;
 
-function find_shortcuts_path(Param: string): string;
+function find_shortcuts_dir(Param: string): string;
 var
   success: boolean;
   active_usr : Cardinal;
@@ -77,9 +78,9 @@ begin
   //First see if a user is logged into steam and use that id
   success := RegQueryDWordValue(HKEY_CURRENT_USER, 'Software\Valve\Steam\ActiveProcess', 'ActiveUser', active_usr);
   if success and (active_usr <> 0) then begin
-    shortcut_path := usr_dir + IntToStr(active_usr) + '/config/shortcuts.vdf';
+    shortcut_path := usr_dir + IntToStr(active_usr) + '/config';
     
-    if FileExists(shortcut_path) then begin
+    if DirExists(shortcut_path) then begin
       result := shortcut_path;
       Exit;  
     end; 
@@ -107,17 +108,27 @@ begin
   end;
   
   if found_dir <> '' then begin
-    shortcut_path := usr_dir + found_dir + '/config/shortcuts.vdf';
-    if FileExists(shortcut_path) then begin
+    shortcut_path := usr_dir + found_dir + '/config';
+    if DirExists(shortcut_path) then begin
       result := shortcut_path;
       Exit;  
     end;  
   end;   
 end;
 
-function has_shortcuts(): boolean;
+function get_shortcuts_file(Param: string): string;
+var
+  shortcuts_dir: string;
 begin
-  result := (find_shortcuts_path('') <> '');
+  shortcuts_dir := find_shortcuts_dir('');
+  if shortcuts_dir = '' then begin Exit; end;
+
+  result := shortcuts_dir + '/shortcuts.vdf';
+end;
+
+function has_shortcuts_dir(): boolean;
+begin
+  result := (find_shortcuts_dir('') <> '');
 end;
 
 function can_copy_profiles(): boolean;
@@ -148,6 +159,14 @@ begin
   DirOk_Label.Caption := 'My checkbox';
   // See https://stackoverflow.com/q/30469660/850848
   DirOk_Label.Height := ScaleY(DirOk_Label.Height);
+
+  Finished_Notice_Label := TNewStaticText.Create(WizardForm.FinishedPage);
+  Finished_Notice_Label.Parent := WizardForm.FinishedPage;
+  Finished_Notice_Label.Top := WizardForm.FinishedLabel.Top + WizardForm.FinishedLabel.Height + ScaleY(24);
+  Finished_Notice_Label.Left := WizardForm.FinishedLabel.Left;
+  Finished_Notice_Label.Caption := '* Restart Steam to see WSE2 in your library *';
+  Finished_Notice_Label.Height := ScaleY(Finished_Notice_Label.Height);
+  Finished_Notice_Label.Hide();
 end;
 
 procedure CurPageChanged(CurPageID: Integer);
@@ -158,7 +177,7 @@ begin
     OnDirChanged(nil);
   end
   else if (CurPageID = wpReady) and WizardIsTaskSelected('steam_shortcut') then begin
-    p := find_shortcuts_path('');
+    p := get_shortcuts_file('');
     with Wizardform.ReadyMemo.Lines do begin
       Add('');
       Add('**Notice**');
@@ -166,7 +185,11 @@ begin
       Add('    "' + p + '"');
       Add('    A backup is created in the same folder with .bak ending');
       Add('    If something goes wrong, you can restore from this file.');
-      Add('    You must restart Steam to see the new shortcut.');  
     end;
+  end
+  else if (CurPageID = wpFinished) then begin
+    if WizardIsTaskSelected('steam_shortcut') then begin
+      Finished_Notice_Label.Show();
+    end 
   end
 end;
