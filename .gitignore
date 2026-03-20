@@ -1,3 +1,4 @@
 
 vdf-editor/.vs/*
-vdf-editor/x64/Debug/*
+vdf-editor/x64/*
+vdf-editor/win32/*
