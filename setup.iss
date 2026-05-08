@@ -40,7 +40,7 @@ WizardImageFile=Images\mb_inst_left.bmp
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}";
 Name: "steam_shortcut"; Description: "Add to your steam library";  Check: has_shortcuts_dir
 Name: "copy_profiles"; Description: "Copy profiles"; Check: can_copy_profiles
 
@@ -56,6 +56,7 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 
 [Run]
 Filename: "{app}\vdf-shortcut-editor.exe"; Parameters: """{code:get_shortcuts_file}"" -a -1287593386 ""Mount & Blade: Warband WSE2"" ""{app}\{#MyAppExeName}"""; StatusMsg: "Adding to steam..."; Flags: runhidden; Check: WizardIsTaskSelected('steam_shortcut');
+Filename: {app}\wse2_launcher.exe; Description: Start WSE2; Flags: postinstall nowait skipifsilent
 
 [Code]
 var
