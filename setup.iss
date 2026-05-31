@@ -45,7 +45,7 @@ Name: "steam_shortcut"; Description: "Add to your steam library";  Check: has_sh
 Name: "copy_profiles"; Description: "Copy profiles"; Check: can_copy_profiles
 
 [Files]
-Source: ".\files\WSE\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs
+Source: ".\files\WSE\*"; Excludes: "*.pdb,*dedicated*,*server*,\WSE2 SDK\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs
 ;Below is an empty placeholder file in case the steam user doesnt have a shortcuts.vdf yet
 Source: ".\files\shortcuts.vdf"; DestDir: "{code:find_shortcuts_dir}"; Check: WizardIsTaskSelected('steam_shortcut'); Flags: onlyifdoesntexist
 Source: ".\files\vdf-shortcut-editor.exe"; DestDir: "{app}"; Flags: deleteafterinstall
