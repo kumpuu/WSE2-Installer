@@ -5,3 +5,5 @@
 
 To update included WSE, simply change contents of ./files/WSE/  
 and compile with "Inno\iscc.exe setup.iss /DMyAppVersion=version_number_here"
+
+Find latest releases at https://github.com/Ruslan-700/WSE2-Releases/releases
