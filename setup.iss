@@ -388,7 +388,7 @@ begin
   
   Finished_Notice_Label := TNewStaticText.Create(WizardForm.FinishedPage);
   Finished_Notice_Label.Parent := WizardForm.FinishedPage;
-  Finished_Notice_Label.Top := WizardForm.FinishedLabel.Top + WizardForm.FinishedLabel.Height + ScaleY(24);
+  Finished_Notice_Label.Top := WizardForm.FinishedPage.Height - ScaleY(48);
   Finished_Notice_Label.Left := WizardForm.FinishedLabel.Left;
   Finished_Notice_Label.Caption := '* Restart Steam to see WSE2 in your library *';
   Finished_Notice_Label.Height := ScaleY(Finished_Notice_Label.Height);
